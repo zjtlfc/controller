@@ -1,0 +1,232 @@
+
+#define	OSC		8							/*定义晶振为8MHZ*/
+/*===========================================定义所有输入宏定义===========================================*/
+#define	KEY_ON_WAKE_SW		((PTA->PDIR & 0X00004000)>>14)      	/*钥匙唤醒输入信号PTA14*/	
+#define	CHARGE_WAKE_SW		((PTA->PDIR & 0X00000800)>>11)		/*充电唤醒输入信号PTA11*/
+#define 	RTC_WAKE_SW			((PTA->PDIR & 0X00000200)>>9)		      /*适时时钟RTC唤醒,PTA9*/
+#define	CP_PWM_TECT			((PTD->PDIR & 0X00000400)>>11)		/*慢充CP点PWM信号检测,PTD11*/
+#define	SB1_INPUT			((PTA->PDIR & 0X00020000)>>17)		/*开关SB1输入信号,PTA17*/
+#define	SB2_INPUT			((PTE->PDIR & 0X00000080)>>7)		      /*开关SB2输入信号,PTE7*/
+#define	SB3_INPUT			((PTD->PDIR & 0X00000100)>>8)		      /*开关SB3输入信号,PTD8*/
+#define	SB4_INPUT			((PTD->PDIR & 0X00000200)>>9)		      /*开关SB4输入信号,PTD9*/
+#define	SB5_INPUT			((PTC->PDIR & 0X00000200)>>9)		      /*开关SB5输入信号,PTC9*/
+#define	SB6_INPUT			((PTC->PDIR & 0X00000100)>>8)		      /*开关SB6输入信号,PTC8*/
+#define	SB7_INPUT			((PTD->PDIR & 0X00004000)>>14)		/*开关SB7输入信号,PTD14*/
+#define	SB8_INPUT			((PTD->PDIR & 0X00002000)>>13)		/*开关SB8输入信号,PTD13*/
+#define	SB9_INPUT			((PTD->PDIR & 0X00000020)>>5)		      /*开关SB9输入信号,PTD5*/
+#define	SB10_INPUT			((PTD->PDIR & 0X00001000)>>12)		/*开关SB10输入信号,PTD12*/
+#define	SB11_INPUT			((PTD->PDIR & 0X00000800)>>11)		/*开关SB11输入信号,PTD11*/
+#define	SB12_INPUT			((PTE->PDIR & 0X00000008)>>3)		      /*开关SB12输入信号,PTE3*/
+#define	SB13_INPUT			((PTE->PDIR & 0X00004000)>>14)		/*开关SB13输入信号,PTDE14*/
+#define	SB14_INPUT			((PTA->PDIR & 0X00000004)>>2)		      /*开关SB14输入信号,PTA2*/
+#define	SB15_INPUT			((PTA->PDIR & 0X00001008)>>3)		      /*开关SB15输入信号,PTA3*/
+#define	SB16_INPUT			((PTA->PDIR & 0X00000010)>>5)		      /*开关SB16输入信号,PTA5*/
+/*==========================================定义所有输出宏定义============================================*/
+#define	WATCHDOG_TRIGGER		PTB->PTOR = 0X00000200		            /*触发看门狗喂食,PTB9翻转*/ 
+/*========================================================*/
+#define	POWER_LOCK_ENABLE		PTB->PSOR = 0X00000100		            /*设置使能电源自锁,PTB8=1*/
+#define	SLOW_CHARGE_S2_CLOSE	PTB->PSOR = 0X00000400		            /*关闭慢充开关S2,PTB10=1*/
+#define	ENABLE_12V			PTB->PSOR = 0X00000800		            /*使能12V电源输出,PTB11=1*/
+/*========================================================*/
+#define	HS1_OUTPUT_HIGH		PTC->PSOR = 0X00001000		            /*高端开关1输出高电平,PTC12=1*/
+#define	HS2_OUTPUT_HIGH		PTC->PSOR = 0X00002000		            /*高端开关2输出高电平,PTC13=1*/
+#define	HS3_OUTPUT_HIGH	      PTC->PSOR = 0X00000800		            /*高端开关3输出高电平,PTC11=1*/
+#define	HS4_OUTPUT_HIGH	      PTC->PSOR = 0X00000400		            /*高端开关4输出高电平,PTC10=1*/
+#define	HS5_OUTPUT_HIGH		PTC->PSOR = 0X00008000		            /*高端开关5输出高电平,PTC15=1*/
+#define	HS6_OUTPUT_HIGH	      PTC->PSOR = 0X00004000		            /*高端开关6输出高电平,PTC14=1*/
+#define	HS7_OUTPUT_HIGH		PTB->PSOR = 0X00008000		            /*高端开关7输出高电平,PTB15=1*/
+#define	HS8_OUTPUT_HIGH		PTE->PSOR = 0X00000100		            /*高端开关8输出高电平,PTE8=1*/
+/*========================================================*/
+#define	LS1_ENABLE			PTD->PSOR = 0X00000040		            /*低端开关1使能,PTD6=1*/ 
+#define	LS2_ENABLE			PTD->PSOR = 0X00000080		            /*低端开关2使能,PTD7=1*/ 
+#define	LS3_ENABLE			PTD->PSOR = 0X00020000		            /*低端开关3使能,PTD17=1*/ 
+/*========================================================*/
+#define	KBM1_RELAY_CLOSE		PTE->PSOR = 0X00000200		            /*KBM1光MOSFET闭合,PTE9=1*/
+#define	KBM2_RELAY_CLOSE		PTE->PSOR = 0X00001000		            /*KBM2光MOSFET闭合,PTE12=1*/
+#define	KBM3_RELAY_CLOSE		PTE->PSOR = 0X00002000		            /*KBM3光MOSFET闭合,PTE13=1*/
+#define	KBM4_RELAY_CLOSE		PTE->PSOR = 0X00000001		            /*KBM4光MOSFET闭合,PTE0=1*/
+/*========================================================*/
+#define	POWER_LOCK_DISABLE	PTB->PCOR = 0X00000100		            /*设置关闭电源自锁,PTB8=0*/
+#define	SLOW_CHARGE_S2_BREAK	PTB->PCOR = 0X00000400		            /*打开慢充开关S2,PTB10=0*/
+#define	DISABLE_12V			PTB->PCOR = 0X00000800		            /*禁止12V电源输出,PTB11=0*/
+/*========================================================*/
+#define	HS4_OUTPUT_LOW	      PTC->PCOR = 0X00000400		            /*高端开关4输出低电平,PTC10=0*/
+#define	HS3_OUTPUT_LOW	      PTC->PCOR = 0X00000800		            /*高端开关3输出低电平,PTC11=0*/
+#define	HS1_OUTPUT_LOW		PTC->PCOR = 0X00001000		            /*高端开关1输出低电平,PTC12=0*/
+#define	HS2_OUTPUT_LOW		PTC->PCOR = 0X00002000		            /*高端开关2输出低电平,PTC13=0*/
+#define	HS6_OUTPUT_LOW	      PTC->PCOR = 0X00004000		            /*高端开关6输出低电平,PTC14=0*/
+#define	HS5_OUTPUT_LOW		PTC->PCOR = 0X00008000		            /*高端开关5输出低电平,PTC15=0*/
+#define	HS7_OUTPUT_LOW		PTB->PCOR = 0X00008000		            /*高端开关7输出低电平,PTB15=0*/
+#define	HS8_OUTPUT_LOW		PTE->PCOR = 0X00000100		            /*高端开关8输出低电平，PTE8=0*/
+/*========================================================*/
+#define	LS1_DISABLE			PTD->PCOR = 0X00000040		            /*低端开关1禁止,PTD6=0*/ 
+#define	LS2_DISABLE			PTD->PCOR = 0X00000080		            /*低端开关2禁止,PTD7=0*/ 
+#define	LS3_DISABLE			PTD->PCOR = 0X00020000		            /*低端开关3禁止,PTD17=0*/ 
+/*========================================================*/
+#define	KBM4_RELAY_BREAK		PTE->PCOR = 0X00000001		            /*KBM4光MOSFET断开,PTE0=0*/
+#define	KBM1_RELAY_BREAK		PTE->PCOR = 0X00000200		            /*KBM1光MOSFET断开,PTE9=0*/
+#define	KBM2_RELAY_BREAK		PTE->PCOR = 0X00001000		            /*KBM2光MOSFET断开,PTE12=0*/
+#define	KBM3_RELAY_BREAK		PTE->PCOR = 0X00002000		            /*KBM3光MOSFET断开,PTE13=0*/
+/*==================================所有输出端口的驱动状态检测=========================================*/
+#define	HS1_OUTPUT_CHECK		((PTC->PDOR & 0X00001000)>>12)            /*高端开关1,PTC12状态检测*/
+#define	HS2_OUTPUT_CHECK		((PTC->PDOR & 0X00002000)>>13)            /*高端开关2,PTC13状态检测*/
+#define	HS3_OUTPUT_CHECK	      ((PTC->PDOR & 0X00000800)>>11)            /*高端开关3,PTC11状态检测*/
+#define	HS4_OUTPUT_CHECK	      ((PTC->PDOR & 0X00000400)>>10)            /*高端开关4,PTC10状态检测*/
+#define	HS5_OUTPUT_CHECK		((PTC->PDOR & 0X00008000)>>15)	      /*高端开关5,PTC15状态检测*/
+#define	HS6_OUTPUT_CHECK	      ((PTC->PDOR & 0X00004000)>>14)            /*高端开关6,PTC14状态检测*/
+#define	HS7_OUTPUT_CHECK		((PTB->PDOR & 0X00008000)>>15)            /*高端开关7,PTB15状态检测*/
+#define	HS8_OUTPUT_CHECK		((PTE->PDOR & 0X00000100)>>8)	            /*高端开关8,PTE8状态检测*/
+#define	LS1_OUTPUT_CHECK	      ((PTD->PDOR = 0X00000040)>>6)		      /*低端开关1,PTD6状态检测*/ 
+#define	LS2_OUTPUT_CHECK		((PTD->PDOR = 0X00000080)>>7)		      /*低端开关2,PTD7状态检测*/ 
+#define	LS3_OUTPUT_CHECK	      ((PTD->PDOR = 0X00020000)>>17)	      /*低端开关3,PTD17状态检测*/ 
+#define	SLOW_S2_OUTPUT_CHECK    ((PTB->PDOR = 0X00000400)>>10)	      /*打开慢充开关S2,PTB10状态检测*/
+#define	KBM4_RELAY_CHECK		((PTE->PDOR = 0X00000001)>>0)		      /*KBM4光MOSFET,PTE状态检测*/
+#define	KBM1_RELAY_CHECK		((PTE->PDOR = 0X00000200)>>9)		      /*KBM1光MOSFET,PTE9状态检测*/
+#define	KBM2_RELAY_CHECK		((PTE->PDOR = 0X00001000)>>12)	      /*KBM2光MOSFET,PTE12状态检测*/
+#define	KBM3_RELAY_CHECK		((PTE->PDOR = 0X00002000)>>13)	      /*KBM3光MOSFET,PTE13状态检测*/
+/*=============================================ATD0转换通道定义=============================================*/
+#define     MAIN_HIGH_CUR_CHANNEL         0                             /*主正接触器线圈驱动电流A/D转换通道*/
+#define     MAIN_LOW_CUR_CHANNEL          1                             /*主负接触器线圈驱动电流A/D转换通道*/
+#define     PRE_CHARGE_CUR_CHANNEL        2                             /*预充电接触器线圈驱动电流A/D转换通道*/
+#define     SLOW_CHARGE_CUR_CHANNEL       3                             /*慢充接触器线圈驱动电流A/D转换通道*/
+#define     QUICK_CHARGE_CUR_CHANNEL      4                             /*快充接触器线圈驱动电流A/D转换通道*/
+#define     AC_RELAY_CUR_CHANNEL          5                             /*空调接触器线圈驱动电流A/D转换通道*/
+#define     DCDC_RELAY_CUR_CHANNEL        6                             /*DC/DC接触器线圈驱动电流A/D转换通道*/
+#define     PTC_RELAY_CUR_CHANNEL         8                             /*PTC接触器线圈驱动电流A/D转换通道*/
+#define     VS1_CHECK_CHANNEL             9                             /*系统外部输出5V电源A/D转换通道*/
+#define     UB_CHECK_CHANNEL              10                            /*系统输入电源A/D转换通道*/
+#define     VM_CHECK_CHANNEL              11                            /*系统BUCK后的电源A/D转换通道*/
+/*=============================================ATD1转换通道定义=============================================*/
+#define     QUICK_TEST2_CHANNEL           2                             /*快充检测点2 A/D转换通道*/
+#define     SLOW_CC_CHANNEL               3                             /*慢充插头CC点A/D转换通道*/
+#define     QUICK_HIGH_TEMP_CHANNEL       4                             /*快充＋温度检测A/D转换通道*/
+#define     QUICK_LOW_TEMP_CHANNEL        5                             /*快充－温度检测A/D转换通道*/
+#define     SLOW_HIGH_TEMP_CHANNEL        6                             /*慢充＋温度检测A/D转换通道*/
+#define     SLOW_LOW_TEMP_CHANNEL         7                             /*慢充－温度检测A/D转换通道*/
+#define     BACKUP_TEMP1_CHANNEL          8                             /*备用温度1 A/D转换通道*/
+#define     QUICK_V12_CHANNEL             9                             /*国标快充12V电压输出检测A/D转换通道*/
+#define     BACKUP_TEMP2_CHANNEL          10                            /*备用温度2 A/D转换通道*/
+#define     BACKUP_TEMP3_CHANNEL          11                            /*备用温度3 A/D转换通道*/
+#define     BACKUP_TEMP4_CHANNEL          12                            /*备用温度4 A/D转换通道*/
+#define     BACKUP_TEMP5_CHANNEL          13                            /*备用温度5 A/D转换通道*/
+/*=============================================BCU控制相关宏定义===========================================*/
+#define     BCU_COUNT_NUMBER        16                                  /*系统可能连接BCU的最大数量*/
+#define     BCU_DATA_TRANS          LPSPI0->TCR = 0X5800041F            /*BCU发送数据,132个字节,应该DMA发送*/
+#define     BCU_COMMAND_BROSAT      LPSPI0->TCR = 0X5800001F            /*BCU发送命令,4个字节, 直接发送*/
+/*===============================================EEPROM相关宏定义===========================================*/
+#define     ERASR_FLASH_SECTOR      0x09                                /*擦除FLASH扇区中的所有数据*/
+#define     PROGRAM_FLASH           0x07                                /*对FLASH进行一次写入程序*/
+#define     EEPROM_DEPART           8                                   /*EEPROM分区代码,64KEFLASH*/
+#define     EEPROM_EEESIZE          0X02                                /*EEPROM大小:4KByte*/
+#define     EEPROM_PGMPART          0X80                                /*对EEPROM进行分区*/
+#define     EEPROM_SE_FlEXRAM       0X81                                /*设置FLEXRAM工作模式*/
+#define     EEPROM_EMULATED         0X00                                /*FLEXRAM工作在仿真EEPROM模式*/
+#define     EEPROM_QUERY_STATUS     0X77                                /*FLEXRAM工作状态查询*/
+#define     EEPROM_QUICK_WRITE      0X55                                /*FLEXRAM快速写入操作*/
+/*=================================================数据结构定义=============================================*/
+/*=================================================CAN波特率定义============================================*/
+typedef	enum {CAN_1000 ,CAN_500 ,CAN_250 , CAN_200 , CAN_125 , CAN_100 , CAN_50 } CANBAUD;
+/*===================================================定义CAN口号============================================*/
+typedef	enum { CanChannel0 ,CanChannel1 ,CanChannel2 } CANCHANNEL;
+/*===================================================定义SPI通道号==========================================*/
+typedef	enum { SpiChannel0 ,SpiChannel1 ,SpiChannel2 } SPICHANNEL;
+/*==========================================================================================================*/
+#define	CAN0_RECE_MN_SIZE		31					      /*CAN0接收数据邮箱长度*/
+#define	CAN0_TRAN_MN_POS		31					      /*CAN0发送数据邮箱位置*/
+#define	CAN1_RECE_MN_SIZE		15					      /*CAN1接收数据邮箱长度*/
+#define	CAN1_TRAN_MN_POS		15					      /*CAN1发送数据邮箱位置*/
+#define	CAN2_RECE_MN_SIZE		15					      /*CAN2接收数据邮箱长度*/
+#define	CAN2_TRAN_MN_POS		15					      /*CAN2发送数据邮箱位置*/
+#define     CAN0_TRAN_BUFF_SIZE     40                                  /*CAN0发送缓冲区长度*/
+#define     CAN1_TRAN_BUFF_SIZE     40                                  /*CAN1发送缓冲区长度*/
+#define     CAN2_TRAN_BUFF_SIZE     40                                  /*CAN2发送缓冲区长度*/
+#define     CAN0_RECE_BUFF_SIZE     32                                  /*CAN0接受缓冲区长度*/
+#define     CAN1_RECE_BUFF_SIZE     32                                  /*CAN1接受缓冲区长度*/
+#define     CAN2_RECE_BUFF_SIZE     32                                  /*CAN2接受缓冲区长度*/
+#define     DMA_CAN0_SOURCE         54                                  /*CAN0接收DMA源*/
+#define     DMA_CAN1_SOURCE         55                                  /*CAN1接收DMA源*/
+#define     DMA_CAN2_SOURCE         56                                  /*CAN2接收DMA源*/
+#define     DMA_SPI0_RECE_SOURCE    14                                  /*SPI0通道RX DMA源*/
+#define     DMA_SPI0_TRAN_SOURCE    15                                  /*SPI0通道TX DMA源*/
+/*=========================================CAN消息邮箱RX命令宏定义=========================================*/
+#define	CAN_MB_RX_INACTIVE	0X00		/*接收邮箱处于不活跃状态*/
+#define	CAN_MB_RX_EMPTY		0X04		/*接收邮箱处于空闲状态,等待接收CAN信息*/
+#define	CAN_MB_RX_FULL		0X02		/*接收邮箱满状态,可以读取邮箱中的内容*/
+#define	CAN_MB_RX_OVERRUN		0X06		/*接收邮箱数据覆盖模式,接收数据有丢失*/
+/*==========================================CAN消息邮箱TX命令宏定义=======================================*/
+#define	CAN_MB_TX_INACTIVE	0X08		/*发送邮箱处于不活跃状态*/
+#define	CAN_MB_TX_ABORT		0X09		/*发送邮箱处于终止发送状态*/
+#define	CAN_MB_TX_DATA		0X0C		/*发送邮箱处于发送状态,无条件发送数据一次*/
+/*==========================================CAN报文缓冲区格式==============================================*/
+struct  	CAN_MESSAGE_BUFFER
+{
+unsigned int 	NOUSE2:16,DLC:4,RTR:1,IDE:1,SRR:1,NOUSE1:1,CODE:4,NOUSE:4;	/*CAN0通讯控制字*/
+union
+{
+struct {unsigned int	ID:29,NOUSE3:3;}EXTEND;	/*CAN_ID扩展帧*/
+struct {unsigned int	NOUSE4:16,NOUSE5:2,ID:11,NOUSE6:3;}STAND;	/*CAN_ID表准帧*/      
+}CAN_ID;
+unsigned char	Data[8];	/*CAN报文数据*/
+};
+/*===============================================全局变量声明区============================================*/
+extern 	struct CAN_MESSAGE_BUFFER   Can0TranBuffer[];               /*CAN0发送缓冲去*/
+extern 	struct CAN_MESSAGE_BUFFER   Can1TranBuffer[];               /*CAN1发送缓冲去*/
+extern 	struct CAN_MESSAGE_BUFFER   Can2TranBuffer[];               /*CAN2发送缓冲去*/
+extern 	struct CAN_MESSAGE_BUFFER   Can0ReceBuffer[];               /*CAN0接收缓冲区*/
+extern 	struct CAN_MESSAGE_BUFFER   Can1ReceBuffer[];               /*CAN1接收缓冲区*/
+extern 	struct CAN_MESSAGE_BUFFER   Can2ReceBuffer[];               /*CAN2接收缓冲区*/
+extern 	int   Can0TranTop,Can0TranTail;           /*CAN0发送缓冲区头尾指针*/
+extern 	int   Can1TranTop,Can1TranTail;           /*CAN1发送缓冲区头尾指针*/
+extern 	int   Can2TranTop,Can2TranTail;           /*CAN2发送缓冲区头尾指针*/
+extern 	int   Can0RecePosition,Can1RecePosition,Can2RecePosition;   /*Can0、Can1、Can2接收缓冲区指针位置*/
+
+
+
+
+
+/*=================================================函数声明区==============================================*/
+extern 	void  SystemCoreClockConfigure(void);				            /*系统时钟配置函数*/
+extern 	void	InitHardware(void);						            /*初始化系统硬件*/
+extern 	void 	EnableCanClock(CANCHANNEL);					            /*使能CAN总线时钟*/
+extern 	void 	ResetCanModule(CANCHANNEL);					            /*使CAN模块进入复位状态*/
+extern	void 	InitCan(CANCHANNEL,CANBAUD);					            /*CAN0初始化函数*/
+extern 	int  	TranCan(CANCHANNEL,struct  CAN_MESSAGE_BUFFER *);	            /*发送CAN数据*/
+extern 	int	ReadCanData(CANCHANNEL,struct  CAN_MESSAGE_BUFFER *);             /*读取CAN报文缓冲区接收数据*/
+extern 	int   CANTranQueue(CANCHANNEL,struct  CAN_MESSAGE_BUFFER *);            /*队列发送CAN数据*/
+extern 	void  DmaInitial(void);                                                 /*DMA初始化模块*/
+extern 	unsigned char  EepromQuickWrite(unsigned int);                          /*EEPROM快速写入*/
+extern      void  FlexramEeprom(void);                                              /*设置FLEXRAM为EEPROM仿真模式*/
+extern      void  FlexRamParden(void);                                              /*FLEXRAM分区命令*/
+extern      void  EraseFlashSector(unsigned int);                                   /*擦除BaseAddress地址范围的Flash扇区(4K)*/
+extern      void  WriteFlash(unsigned int,unsigned char *);                         /*在FLASH给定地址编程*/
+extern      void  WriteEepromData(unsigned int *,unsigned int  *,unsigned int);     /*写入EEPROM数据(32位)*/
+extern      void  WriteEepromShort(unsigned short *,unsigned short  *,unsigned int);/*写入EEPROM数据(16位)*/
+extern      void  InitLPSpi(SPICHANNEL,unsigned int );                              /*初始化QSPI模块*/
+extern      void  BcuSpiDma(unsigned char *,unsigned char *,int );                  /*通过DMA方式与BCU进行SPI通讯*/
+extern      void  InitATD(void);                                                    /*InitATD初始化A/D转换*/
+extern      void  StartAtdConver(void);                                             /*批量启动A/D转换*/
+extern      void  GetAtdResult(void);                                               /*获得A/D转换结果*/
+extern      void  AutoCalibrationATD(void);                                         /*设置ADC自动校正功能*/
+extern      void  InitFtm2Capture(void);                                            /*初始化PWM特征捕捉功能*/
+extern      void  StartFtm2Capture(unsigned int);                                   /*开始捕捉PWM输入特征*/
+extern      void  ReadFtm2CaptureData(unsigned int);                                /*读PWM特征数据*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

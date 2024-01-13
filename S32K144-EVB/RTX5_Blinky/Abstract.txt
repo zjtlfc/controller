@@ -1,0 +1,20 @@
+The 'Blinky' project is a simple CMSIS RTOS2 based example for
+NXP 'S32K144 microcontroller using NXP 'S32K144_EVB' Board.
+Compliant to Cortex Microcontroller Software Interface Standard (CMSIS).
+
+Example functionality:
+ - Clock Settings:
+   - XTAL    =            8.00 MHz
+   - SYSCLK  =           80.00 MHz
+
+ - 3 LEDs (RGB LED) are blinking with speed depending on potentiometer.
+ - blinking is paused while holding down the SW2 or SW3 button.
+
+
+The Blinky program is available in different targets:
+
+  S32K144 RAM:       Debug/Target Driver is configured as ULink2
+                     runs from Internal RAM located on chip
+
+  S32K144 Flash:     Debug/Target Driver is configured as ULink2
+                     runs from Internal Flash located on chip
