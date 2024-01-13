@@ -1,0 +1,501 @@
+
+/*=======================================================宏定义区===============================================*/
+#define     PARAMETER_MADE_WORK_ADDRESS         0X14000C00              /*系统生产制造参数在EEPROM中的首地址*/
+#define     PARAMETER_SYSTEM_ADDRESS            0X14000C10              /*系统参数在EEPROM中的首地址*/
+#define     PARAMETER_CHARGE_ADDRESS            0X14000C68              /*充电相关参数在EEPROM中的首地址*/
+#define     PARAMETER_TEMP_ADDRESS              0X14000CB8              /*温度相关参数在EEPROM中的首地址*/
+#define     PARAMETER_VOLTAGE_ADDRESS           0X14000D00              /*电压相关参数载EEPROM中的首地址*/
+#define     PARAMETER_RESITION_ADDRESS          0X14000D30              /*电芯内阻表在EEPROM中的首地址*/
+#define     PARAMETER_UNDER_VOLTAGE_ADDRESS     0X14000E58              /*电芯电压下限曲线表在EEPROM中的首地址*/
+#define     PARAMETER_OUT_XIAOLV_ADDRESS        0X14000E90              /*电池包动态输出效率表在EEPROM中的首地址*/
+#define     PARAMETER_OCV_SOC_ADDRESS           0X14000EC8              /*BMS系统OCV-SOC修正相关参数在EEPROM中的首地址*/
+#define     PARAMETER_TEMP_QUICK_PLUG           0X14000EF0              /*快充插座热敏电阻分压表*/
+#define     PARAMETER_TEMP_SLOW_PLUG            0X14000F20              /*慢充插座热敏电阻分压表*/
+#define     PARAMETER_TEMP_BMS_INTRE_SIGANL     0X14000F50              /*BMS系统内部热敏电阻分压表*/
+#define     PARAMETER_TEMP_BMS_BACKUP_SIGANL    0X14000F80              /*BMS系统预留热敏电阻分压表*/
+/*======================================与CAN发送相关宏定义=================================*/
+#define     CAN_REPEAT_BUFFER_SIZE        20    /*CAN循环发送数据缓冲区数量*/
+#define     CHARGE_CAN                    CanChannel2       /*充电CAN为CAN通道2*/
+#define     BATTERY_CAN                   CanChannel1       /*BMS内部CAN为CAN通道1*/
+#define     SYSTEM_CAN                    CanChannel0       /*整车CAN为CAN通道0*/
+/*====================================BMU/BCU测试用报文(调试完成删除)======================================*/
+#define    BMU_TO_BCU_TEST1               0X18008001        /*BMS_BCU测试用ID1:0X18001001*/
+#define    BMU_TO_BCU_TEST2               0X18008002        /*BMS_BCU测试用ID1:0X18001002*/
+#define    BMU_TO_BCU_TEST3               0X18008003        /*BMS_BCU测试用ID1:0X18001003*/
+#define    BMU_TO_BCU_TEST4               0X18008004        /*BMS_BCU测试用ID1:0X18001004*/
+/*=========================================================================================================*/
+#define     BMU_TO_BCU_CONTROL            0X20              /*BMU发送命令数据给BCU，控制BCU运行,ID:0X20*/
+#define     BMU_TO_SLOW_CHANGR            0X1806E5F4        /*BMU发送给充电机的参数数据,ID:0X1806E5F4*/
+
+#define     GB_QUICK_CHARGE_BRM_BCP_BCS   0X1CEB56f4        /*BMU向国标快速充电机发送的辩识报文,ID:0X1CEB56f4*/
+#define     GB_QUICK_CHARGE_BRO           0X100956f4        /*BMU向国标快速充电机发送的充电准备抱文,ID:0X100956f4*/
+#define     GB_QUICK_CHARGE_BCL           0X181056f4        /*BMU向国标快速充电机发送充电需求报文,ID:0X181056f4*/
+#define     GB_QUICK_CHARGE_BSM           0XC09EADE8        /*BMU向国标快速充电机发送电池状态信息报文,ID:0X181356f4*/
+#define     GB_QUICK_CHARGE_BMV           0X181356f4        /*单体动力蓄电池电压参数报文,ID:0X181556f4*/
+#define     GB_QUICK_CHARGE_BMT           0X181656f4        /*单体动力蓄电池温度参数报文,ID:0X181656f4*/
+#define     GB_QUICK_CHARGE_BSP           0X181756f4        /*预留报文,ID:0X181756f4*/
+#define     GB_QUICK_CHARGE_BST           0X101956f4        /*BMU向国标快速充电机发送终止报文,ID:0X101956f4*/
+#define     GB_QUICK_CHARGE_BSD           0X181c56f4        /*BMS统计数据报文,ID:0X181c56f4*/
+#define     GB_QUICK_CHARGE_BEM           0X081e56f4        /*BMU向国标快速充电机发充电错误报文,ID:0X081e56f4*/
+#define     GB_QUICK_CHARGE_RTS           0X1cec56f4        /*BMU向国标快速充电机发RTS报文,ID:1cec56f4*/
+#define     GB_QUICK_BHM                  0X182756F4        /*BMU向国标快冲机反馈握手辨识报文，ID：0X182756F4*/
+/*=======================================与电池组相关的宏定义================================*/
+#define     BATTERY_PACK_COUNT            16                /*BMS最多的字系统BCU数量*/
+#define     BCU_SERIAL_CODE_OK            2                 /*所有BCU中的识别码与BMU中原来记录的相同*/
+#define     BCU_SERIAL_CODE_CHANGE        1                 /*所有BCU中的识别码与BMU中原来记录的不同，并更新完成*/
+#define     BMS_INITIAL_START             0                 /*BMS刚刚启动,目前还未开始初始化操作*/
+#define     BMS_INITIAL_RUNING            1                 /*BMS系统正在自检中*/
+#define     BMS_INITIAL_COMPLETE          2                 /*BMS系统自检已经完成*/
+#define     BMS_INITIAL_FAULT             3                 /*BMS系统自检错误，系统报警*/
+#define     BMS_BALANCE_ON_RUNING         0                 /*BMS平衡控制:工作中适时控制*/
+#define     BMS_BALANCE_CHARGEING         1                 /*BMS平衡控制:仅在充电中进行平衡控制*/
+#define     BMS_BALANCE_ALL               2                 /*BMS平衡控制:以上两种方式都有*/
+/*=======================================系统主状态机宏定义==================================*/
+#define     MAIN_STATE_INITIAL            0                 /*主状态机初始化*/
+#define     MAIN_STATE_FAULT              0XAA              /*主状态机进入错误状态*/
+#define     MAIN_LOW_RELAY_CHECK          0X01              /*主负接触器粘连检测*/
+#define     MAIN_STATE_TEST_SELF          0X05              /*BMS主状态机自检OK*/
+#define     MAIN_STATE_DISCHARGE          0X10              /*BMS主状态机:放电状态*/
+#define     MAIN_STATE_QUICK_CHARGE       0X15              /*BMS主状态机:国标快充状态*/
+#define     MAIN_STATE_SLOW_CHARGE        0X18              /*BMS主状态机:车载慢充状态*/
+#define     MAIN_STATE_KEY_OFF            0X1C              /*BMS主状态机:下电状态*/
+/*=====================================================================数据类型定义区===============================================================================*/
+/*==================================重复发送CAN数据结构======================================*/
+struct  CanRepeatTran                             
+{
+unsigned int      RepeatTimes;                  /*CAN数据发送循环间隔时间,单位mS*/
+unsigned int      SurplusTimes;                 /*当前CAN数据发送的剩余时间,单位mSmS*/
+unsigned int      CanID;                        /*当前要发送CAN数据的ID信息*/
+unsigned char     DataLength;                   /*当前要发送CAN数据长度*/
+unsigned char     Action;                       /*要在CAN通讯过程中执行的动作0:无动作   0X55:CAN发送前执行数据更新  0XAA:CAN发送后执行数据更新*/
+unsigned char     CanIdType;                    /*CAN报文类型；0：标准帧；1：扩展帧*/
+unsigned char     CanChannel;                   /*CAN通道号*/
+int               Times;                        /*发送的次数 >0:发送若干次, =0:停止发送 <0:永远循环发送*/
+unsigned char     Data[8];                      /*当前要发送CAN数据*/
+};
+/*=========================================BMS相关数据结构=======================================*/
+struct BmsStatusStruct
+{
+unsigned int      BcuRunState:8,BcuErrorCount:8,BcuNumber:6,GpioTestSelf:2,MultiTestSelf:1,VoltageTestSelf:2,StateGroupTestSelf:2,OpenLoadTestSelf:2,ConfigResigerTest:1;
+                 /*BCU运行状态、 BCU错误次数、   BCU总的数量、GPIO自检、    多路开关自检、     电压A/D自检、      状态组自检、        电芯开路自检、  配置寄存器检测*/
+unsigned int      BcuSerialStatus:2,BmsInitStatus:2,TempCycle:3,EvcuRequstOutput:1,NOUSE:24;
+                 /*BCU编码获得状态、BMS自检状态、   温度循环、  EVCU请求高压输出*/
+long         BmsPower;         /*电池当前功率*/
+unsigned    int   BmsCellVoltageTotal;    /*BMS所有电芯电压累加和*/
+unsigned    short CellVoltageMax,CellVoltageMin,CellVoltageAve;   /*电芯电压最大、最小、平均值*/
+unsigned    short CellSerialCount;        /*所有电芯的串联数量*/
+unsigned    short CellVolMaxPosition;     /*电芯最高电压所在位置*/
+unsigned    short CellVolMinPosition;     /*电芯最高低压所在位置*/
+unsigned    short TempSignalNumber;       /*温度传感器数量*/
+unsigned    short TempMaxPosition,TempMinPosition;          /*最高/最低温度点传感器位置*/
+unsigned    short BmsSoc;                 /*BMS系统荷电状态（SOC）,精度0.1%*/
+unsigned    short PowerV12Value;          /*国标快充使用电源+12V,精度0.1V*/
+unsigned    int   BcuCommFaultCount;      /*BMU与BCU通讯质量值,通讯错误的次数累加值*/
+unsigned    int   BmsResition;            /*BMS电池包总的输出内阻,精度0.1mΩ*/
+unsigned    int   BatterysEnery;          /*电池组当前的剩余能量*/
+unsigned    int   BatteryTotalEnery;      /*BMS系统电池包的总能量*/
+unsigned    int   BatteryTotalAH;         /*BMS系统电池包总的AH数,精度0.1AH*/
+unsigned    int   BatteryAHValue;         /*电池包目前剩余AH数(电量),精度0.1AH*/
+signed      char  CellTempMax,CellTempMin,CellTempAve;      /*电芯温度最大、最小,平均温度*/
+signed      char  Fault3Count,Fault2Count,Fault1Count;      /*系统3级报警、2级报警、1级报警数量*/
+};
+/*===================================系统相关数据结构============================================*/
+struct  SystemStruct
+{
+unsigned    short PowerUBValue;           /*系统供电电源迪电压,精度0.1V*/    
+unsigned    short PowerVMValue;           /*系统电源经过BUCK后的电压,精度0.1V*/
+unsigned    short PowerVs1Value;          /*系统对外输出用5V电源,精度0.001V*/
+unsigned    short QuickTest2Value;        /*快充检测点2电压,精度0.1V*/
+unsigned    short SlowCCResition;         /*慢充插头检测电阻*/    
+unsigned    short QuickPlugHighTemp;      /*快充插座高端温度值,精度0.1℃*/      
+unsigned    short QuickPlugLowTemp;       /*快充插座低端温度值,精度0.1℃*/      
+unsigned    short SlowPlugHighTemp;       /*快充插座高端温度值,精度0.1℃*/      
+unsigned    short SlowPlugLowTemp;        /*快充插座低端温度值,精度0.1℃*/         
+unsigned    short PwmValue;               /*PWM占空比*/    
+unsigned    short PwmCycleValue;          /*PWM周期时间，uS*/      
+};
+/*======================================BCU系统PACK相关信息结构定义==============================*/
+struct      BcuPackStruct
+{
+unsigned short    CellVoltage[12];                    /*BCU所管理的电芯电压值,精度1mV*/
+signed char       CellTemp[12];                       /*每一个BCU最多管理的12个温度,范围-55℃—125℃，-120℃以下表示该温度点无传感器*/
+unsigned short    CellBreak1:1,CellBreak2:1,CellBreak3:1,CellBreak4:1,CellBreak5:1,CellBreak6:1,CellBreak7:1,CellBreak8:1,CellBreak9:1,CellBreak10:1,CellBreak11:1,CellBreak12:1,BreakCount:4;
+                  /*电芯1断线、                                                                                                                                                 、总的断线数量*/
+unsigned short    Balance1:1,Balance2:1,Balance3:1,Balance4:1,Balance5:1,Balance6:1,Balance7:1,Balance8:1,Balance9:1,Balance10:1,Balance11:1,Balance12:1,BalanceTime:4;
+                  /*该BCU第1至第12节电芯平衡标志、                                                                                                       电芯平衡最长时间*/
+signed char       BcuBoardTemp1,BcuBoardTemp2;        /*每一个BCU电路板温度,范围-55℃—125℃，-60℃以下表示该温度点无传感器*/
+signed char       BcuOtherTemp;                       /*Bcu附加温度传感器，范围-55℃—125℃，-60℃以下表示该温度点无传感器，一般用来监测铜排温度*/
+signed char       BcuOnlineMark;                      /*BCU在线标志，1：该BCU在线、0：该BCU不在线*/
+};
+/*========================================输出信号上传数据结构===================================*/
+struct      OutputUploadStruct
+{
+unsigned short    KBM1:1,KBM2:1,KBM3:1,KBM4:1,LS1:1,LS2:1,LS3:1,LS4:1,HS1:1,HS2:1,HS3:1,HS4:1,HS5:1,HS6:1,HS7:1,HS8:1;
+};
+/*========================================输入信号上传数据结构===================================*/
+struct      InputUploadStruct
+{
+unsigned short    SB1:1,SB2:1,SB3:1,SB4:1,SB5:1,SB6:1,SB7:1,SB8:1,SB9:1,SB10:1,SB11:1,SB12:1,SB13:1,SB14:1,SB15:1,SB16:1;
+};
+/*=======================================================================系统参数数据结构==============================================================*/
+/*========================生产制造参数定义===========================*/
+struct      Paramerer_Struct_Made   /*生产制造相关参数*/
+{
+unsigned short VehicleCodeHigh;     /*匹配车型代码高16位(0X1C1618B4),十进制值(整车厂给出)*/			
+unsigned short VehicleCodeLow;      /*匹配车型代码低16位(0X1C1618B4),十进制值(整车厂给出)*/		
+unsigned short MadeCodeHigh;        /*制造商代码高16位(0X62801340),十进制值(整车厂给出)*/		
+unsigned short MadeCodeLow;         /*"制造商代码低16位(0X62801340),十进制值(整车厂给出)*/	
+unsigned short ParaVer;             /*参数文件的版本号,用该数值除以100表示(V1.00)*/		
+unsigned short BMSMadeCOMPONY;      /*BMS产品PACK的生产厂家代码(设计师自定义)*/			
+unsigned short BMSSerialCode;       /*制造商内部使用产品/项目代码(BMS厂自定义)*/
+};
+/*==========================系统控制参数定义=======================*/
+struct      Parameter_Struct_System
+{
+unsigned short	CellVolateRate;         /*电芯标称电压，精度0.01V*/
+unsigned short	CellCurrentRate;        /*电芯标称容量，精度0.1AH*/		
+unsigned short	CellBingNumber;         /*电芯的并联数量*/	
+unsigned short	CellChuanNumber;        /*电芯的串连数量*/		
+unsigned short	IsolationEnable;        /*绝缘检测使能，1：使能绝缘检测；0：禁止绝缘检测*/		
+unsigned short	CellType;               /*电池组使用的电芯类型，6表示为三元材料*/		
+unsigned short	BatteryInsulateI;       /*电池组高低压绝缘一级报警门限值，精度0.01MΩ*/	
+unsigned short	BatteryInsulateII;      /*电池组高低压绝缘二级报警门限值，精度0.01MΩ*/	
+unsigned short	BatteryInsulateIII;     /*电池组高低压绝缘三级报警门限值，精度0.01MΩ*/		
+short		      DischargeCurrentLimit;	/*电池组放电电流限制,精度:0.1A"*/		
+short		      ChargeCurrentLimit;	/*电池组回馈电流限制,精度:0.1A*/		
+short		      BatteryDischargePower;	/*电池组连续输出功率，单位:KW*/	
+short		      BatteryDischargePowerMax;	/*电池组连最大出功率，单位:KW*/	
+short		      BatteryChargePower;	/*电池组最大回馈功率，单位:KW*/	
+unsigned short	BatterySocLow;	      /*电池组SOC低，单位:%*/	
+unsigned short	BatterySocVeryLow;	/*电池组SOC已经非常低，单位:%*/	
+unsigned short	BatterySocOverLow;	/*电池组SOC已经到最下限，单位:%*/
+unsigned short	CarType;	            /*新能源汽车类型,0:EV ； 1:HEV ； 2:PHEV ； 3:氢动力*/		
+unsigned short	BatterySocHigh;	      /*电池组SOC已经很高(EV车该参数无效)，单位:%*/	
+unsigned short	BatterySocVeryHigh;	/*电池组SOC太高(EV车该参数无效)，单位:%*/
+unsigned short	BatteryRsiScale1;	      /*内阻比例系数倍乘因子*/	
+unsigned short	BatteryRsiScale2;	      /*内阻比例系数倍除乘因子*/	
+short		      CurrentValueOffset;	/*总线电流测量值的偏移量,精度0.01A*/
+unsigned short	InveterPrechargeScale;	/*变频器预充电到主充电时的电压比例,该数为%*/	
+unsigned short	PreChargeHoldTime;	/*预充电接触器闭合后的最小保持时间,单位mS*/	
+unsigned short	AlarmOuputScale2;	      /*二级报警后限制输出功率百分比*/	
+unsigned short	FaultBreakTime;		/*三级报警后如果整车控制器无反应BMS延时多长时间关闭输出,单位mS*/	
+unsigned short	OutputSoc25Scale;	      /*SOC为25%时的电池放电比例*/		
+unsigned short	OutputSoc20Scale;	      /*SOC为20%时的电池放电比例*/		
+unsigned short	OutputSoc15Scale;	      /*SOC为15%时的电池放电比例*/		
+unsigned short	OutputSoc10Scale;	      /*SOC为10%时的电池放电比例*/		
+unsigned short	OutputSoc5Scale;	      /*SOC为5%时的电池放电比例*/		
+unsigned short	InputSoc95Scale;	      /*SOC为95%时的电池回馈充电比例*/	
+unsigned short	InputSoc90Scale;	      /*SOC为90%时的电池回馈充电比例*/
+unsigned short	InputSoc85Scale;	      /*SOC为85%时的电池回馈充电比例*/	
+unsigned short	InputSoc80Scale;	      /*SOC为80%时的电池回馈充电比例*/	
+unsigned short	InputSoc75Scale;	      /*SOC为75%时的电池回馈充电比例*/	
+unsigned short	BMSTuopuStruct;		/*BMS系统整体拓扑结构,0:菊花链式结构;1:主从(ECU)式结构*/		
+unsigned short	CanExtendEnableSRR;	/*CAN通讯扩展帧ID是能校验SRR位有效,0:不校验""RR"位;1:校验""RR"位*/	
+unsigned short	AlarmPanduanMode;	      /*报警防抖判断模式,0:延时判断;1:上下限回差;2:以上二者共同*/		
+unsigned short    SocCacleMode;           /*SOC计算模式,0:能量积分法;1:AH积分法*/
+};
+/*===========================充电相关参数定义==================================*/
+struct      Parameter_Struct_Charge
+{
+short	            BatteryChargeQuickValue;	/*电池组快速充电电流值70A，精度:0.1A*/	
+short	            BatteryChargeCurrentValue;	/*电池组充电电流值，防止电压过充判断，精度:0.01A*/		
+short	            BatteryChargeCurrentMin;	/*"慢充的最小电流,0.02C*/		
+short	            BatteryChargeCurrentMinQuick;	/*"快充的最小电流,0.05C*/		
+short	            BatteryChargeCompleteSOC;	/*充电终止后，SOC值，单位:%*/		
+short	            BatteryBlanceCurrentLimit;	/*"系统进行平衡判断时充电电流必须大于该值,精度:0.01A"*/		
+unsigned short	CellVolateChargeAve;	      /*电池充电充满时的单节电芯平均电压，单位:mV*/	
+unsigned short	CellVolateShutVolate;	      /*单节电芯慢充电截止电压，当单节电芯大于该值时，即使SOC没到100%也要停止充电，单位:mV*/	
+short	            CellQuickChargeShutVolate;	/*单节电芯快充电截止电压，当单节电芯大于该值时，即使SOC没到100%也要停止充电，单位:mV*/	
+short	            ChargeCurrentMax;             /*用于充电状态判断的充电电流最小值,精度0.01A"*/	
+unsigned short	BatteryVolateOffset;	      /*"满电时电压上下允许波动范围,精度0.1V"*/
+unsigned short	ChargeLockTimes;	            /*"充电抢电子锁锁定保持时间,单位mS"*/	
+unsigned short	ChargeUnlockTimes;	      /*"充电抢电子锁解锁保持时间,单位mS"*/	
+unsigned short	BalanceCellDeltaVolate;	      /*电池系统在充电中启动被动平衡的条件，电芯电压差大于该值*/	
+unsigned short	ChargeVolateError;	      /*"充电中最大过电压值(与BMS要求电压比),精度0.1V"*/
+short	            ChargeCurrentError;	      /*"充电中最大过电流值(与BMS需求电流比),精度0.01A"*/
+short	            SlowChargeCurrent;	      /*系统车载慢充电流值，精度0.1A*/
+unsigned short	ChargeIsolationLimit;	      /*国标快充过程中的绝缘电阻限制值，精度0.01MΩ。*/
+short	            QuickChargeAlarm;	            /*快充插座过温警告温度值，精度0.1℃*/
+short	            QuickChargeFault;	            /*快充插座过温错误温度值，精度0.1℃*/
+short	            SlowChargeAlarm;	            /*慢充插座过温警告温度值，精度0.1℃*/
+short	            SlowChargeFault;	            /*慢充插座过温错误温度值，精度0.1℃*/
+short	            ChargeUnderIIITemp;	      /*温度低III充电温度值，单位℃ / 温度低II回馈温度值，单位℃*/
+short	            ChargeUnderIITemp;	      /*温度低II充电温度值，单位℃ / 温度低I回馈温度值，单位℃*/
+short	            ChargeUnderITemp;	            /*温度低I充电温度值，单位℃ / 温度低回馈温度值，单位℃*/
+short	            ChargeNormalITemp;	      /*温度正常充电温度值，单位℃ / 温度正常回馈温度值，单位℃*/
+short	            ChargeNormalIIIemp;	      /*温度正常充电温度值，单位℃ / 温度正常回馈温度值，单位℃*/
+short	            ChargeOverITemp;	            /*温度高I充电温度值，单位℃ / 温度高回馈温度值，单位℃*/
+short	            ChargeOverIITemp;	            /*温度高II充电温度值，单位℃ / 温度高I回馈温度值，单位℃*/
+short	            ChargeOverIIITemp;	      /*温度高II充电温度值，单位℃ / 温度高II回馈温度值，单位℃*/
+unsigned short	ChargeUnderIIIScale;	      /*温度低III充电电流比例值，单位%/ 温度低II回馈电流比例值，单位%*/
+unsigned short	ChargeUnderIIScale;	      /*温度低II充电电流比例值，单位% / 温度低I回馈电流比例值，单位% */
+unsigned short	ChargeUnderIScale;	      /*温度低充I电电流比例值，单位% / 温度低回馈电流比例值，单位%*/
+unsigned short	ChargeNormalIScale;	      /*温度正常充电电流比例值，单位% / 温度正常回馈电流比例值，单位%*/
+unsigned short	ChargeOverIScale;	            /*温度高I充电电流比例值，单位% / 温度高回馈电流比例值，单位%*/
+unsigned short	ChargeOverIIScale;	      /*温度高II充电电流比例值，单位% / 温度高I回馈电流比例值，单位%*/
+unsigned short	ChargeOverIIIScale;	      /*温度高III充电电流比例值，单位% / 温度高II回馈电流比例值，单位%*/
+};
+/*===========================与温度相关参数定义===================================*/
+struct Parameter_Struct_Temp
+{
+short		      BatteryFanStartTemp;	      /*电池组启动冷却的温度，单位:度*/
+short		      BatteryFanStopTemp;	      /*电池组停止冷却的温度，单位:度*/
+short		      ChipTempUplimit;	            /*芯片温度上限，单位:度*/
+short		      ChipTempDownLimit;	      /*芯片温度下限，单位:度*/
+unsigned short	CellTempUplimit;	            /*电芯温度有效性判断上限制，单位:度*/
+short		      CellTempDownlimit;	      /*电芯温度下限，单位:度*/
+short		      CellHotTempStop;	            /*当电池包加热到该值后加热功能停止.*/
+short		      FanGateTempInside;	      /*风门内循环温度门限*/
+short		      FanGateTempOutside;	      /*风门外循环温度门限*/
+unsigned short	TempSensorAlarm;	            /*当BMU检测的温度传感器数量小于该值时系统产生报警。*/
+unsigned short	TempSensorFault;	            /*当BMU检测的温度传感器数量小于该值时系统产生故障,该值要小于TempSensorAlarm。*/
+short		      CellTempLow;	            /*电芯温度低一级报警,精度1℃*/
+short		      CellTempLower;	            /*电芯温度低二级报警,精度1℃*/
+short		      CellTempLowest;	            /*电芯温度低三级报警,精度1℃*/
+short		      CellTempHigh;	            /*电芯温度高一级报警,精度1℃*/
+short		      CellTempHigher;	            /*电芯温度高二级报警,精度1℃*/
+short		      CellTempHighest;	            /*电芯温度高三级报警,精度1℃*/
+unsigned short	DeltaTemp;	                  /*电芯温差大一级报警,精度1℃*/
+unsigned short	DeldetaTempVery;	            /*电芯温差大二级报警,精度1℃*/
+unsigned short	DeltaTempLimit;	            /*电芯温差大三级报警,精度1℃*/
+short		      CellTempOver;	            /*电芯温度高上限，到达此温度以上BMS马上直接断开高压，停止电池包的所有活动,精度1℃(超级报警内部使用)。*/
+short		      BatterysFairAlarm;	      /*当单体电芯温度超过该值后电池包存在着火的危险，人员必须马上撤离，精度1℃(超级报警内部使用)。*/
+short		      CellTemoUnderLimit;	      /*电芯温度低下限，到达此温度以下BMS马上直接断开高压，停止电池包的所有活动,精度1℃。*/
+unsigned short	EnableHot;	                  /*使能电池包热管理功能(0:禁止热管理;1:使能热管理)*/
+unsigned short	TempLowerDisCur;	            /*电芯温度低二级报警时对应的放电功率比例值,单位%*/
+unsigned short	TempLowestDisCur;	            /*电芯温度低三级报警时对应的放电功率比例值,单位%*/
+unsigned short	TempHigherDisCur;	            /*电芯温度高二级报警时对应的放电功率比例值,单位%*/
+unsigned short	TempHighestDisCur;	      /*电芯温度高三级报警时对应的放电功率比例值,单位%*/
+short		      BatteryStartHotTemp;	      /*电池包平均温度小于该值启动加热*/
+short		      BatteryHotStartAgain;	      /*电池包启动加热功能后,当平均温度低于该值则重新启动加热.*/
+unsigned short	TempAlarmMapEnable;	      /*温度报警输入/输出控制模式,0:与系统报警控制模式相同;1:按温度控制MAP曲线控制输入输出.*/
+};
+/*==========================================与电压相关参数结构定义区===========================*/
+struct Parameter_Struct_Voltage
+{
+unsigned short	CellVolateLow;	            /*电芯电压低（一级报警），单位:mV*/
+unsigned short	CellVolateVeryLow;	      /*电芯电压非常低（二级报警），单位:mV*/
+unsigned short	CellVolateOverLow;	      /*电芯电压到达下限制（三级报警），单位:mV*/
+unsigned short	CellVolateDownmin;	      /*电芯电压的下限最小值（内部最高报警，立即断高压），单位:mV*/
+unsigned short	CellVolateDownlimit;	      /*电芯电压最低限制性，单位:mV,当测量电芯电压小于该值则认为没有电芯.*/
+unsigned short	CellVolateUplimit;	      /*电芯电压的最高限制，单位:mV,当电芯电压测量高于该值时认为错误.*/
+unsigned short	RailVolateLimit;	            /*母线电压最低门限,精度0.1V,当母线电压小于该值时,对于电压参考计算无效.*/
+unsigned short	DeltaVoltage;	            /*电芯压差大一级报警,精度1mV*/
+unsigned short	DeltaVoltageVery;	            /*电芯压差大二级报警,精度1mV*/
+unsigned short	DeltaVoltageLimit;	      /*电芯压差大三级报警,精度1mV*/
+unsigned short	CellVolUnderTestMode;	      /*电芯欠压判断方法,0:用具体电压值判断欠压；1:用电芯最低电压、电流曲线判断；2:二者联合判断*/
+unsigned short	CellVolateHigh;	            /*电芯电压高（一级报警），单位mV*/
+unsigned short	CellVolateVeryHigh;	      /*电芯电压非常高（二级报警），单位mV*/
+unsigned short	CellVolateOverHigh;	      /*电芯电压太高了（三级报警），单位mV*/
+unsigned short	CellVolateOverLimit;	      /*电芯电压太高了（超级报警,内部使用）已经超限制，应马上断高压，单位mV*/
+unsigned short	CellBalanceMode;	            /*电芯平衡方式,0:动态适时平衡;1:充电中启动平衡;2:适时平衡与充电平衡皆有*/
+unsigned short	UnderLineTimeI;	            /*电芯电压低于警戒线时间,单位S,一级报警*/
+unsigned short	UnderLineTimeII;	            /*电芯电压低于警戒线时间,单位S,二级报警*/
+unsigned short	UnderLineTimeIII;	            /*电芯电压低于警戒线时间,单位S,三级报警*/
+};
+/*===========================================电芯内阻表精度0.1========================================*/
+struct Parameter_Struct_Resition
+{
+unsigned short    Value[13][11];                /*电芯内阻表,SOC=%0—100%;温度-40℃—80℃，精度0.1mΩ*/
+};
+/*==========================================电芯电压下限曲线==========================================*/
+struct Parameter_Strucy_UnlineVolage
+{
+unsigned    short Value[25];                    /*电芯电压下限曲线表0A—480A，每20A一个点，精度1mV*/
+};
+/*=========================================电池动态输出效率曲线======================================*/
+struct Parameter_Struct_Xiaolv
+{
+unsigned  short   Value[26];                    /*电池动态输出效率曲线表0A—480A，每20A一个点，精度0.1%*/
+};
+/*=======================================BMS系统OCV-SOC修正相关参数=================================*/
+struct Parameter_Struct_Ocvsoc
+{
+unsigned short	OcvAndSocMaxcurrent;	/*"用OCV来进行SOC评估时的电流最大值范围,精度0.01A*/
+unsigned short	OcvSocVeryTime;	      /*在行车中动态校正SOC时必须满足的小电流静止时间,单位S*/
+unsigned short	OcvSocAmendEnable;	/*OCV-SOC修正模式，0:上下电时修正；1：行车时动态修正；2两种方式都有；其它：不修正*/
+unsigned short	SohOcvStartVoltage;	/*SOH评估开始电压(开路电压)*/
+unsigned short	SohOcvDeltaVoltage;	/*SOH评估跨越电压*/
+unsigned short	SohOcvSocDelta;	      /*SOH评估中电压范围跨越的SOC区间*/
+unsigned short	OcvSocTable[11];        /*OCV—SOC表，SOC：0%—100%，OCV精度1mV*/
+};
+/*====================================快充插座温度传感器分压表====================================*/
+struct Parameter_Struct_Quick_Plug
+{
+unsigned short    Table[21];              /*温度从-50℃—150℃时对应的电阻分压值，单位mV*/
+};
+/*====================================慢充插座温度传感器分压表====================================*/
+struct Parameter_Struct_Slow_Plug
+{
+unsigned short    Table[21];              /*温度从-50℃—150℃时对应的电阻分压值，单位mV*/
+};
+/*====================================BMS内部温度传感器分压表====================================*/
+struct Parameter_Struct_Bms_Intrenat
+{
+unsigned short    Table[21];              /*温度从-50℃—150℃时对应的电阻分压值，单位mV*/
+};
+/*====================================BMS预留温度传感器分压表====================================*/
+struct Parameter_Struct_Bms_Backup
+{
+unsigned short    Table[21];              /*温度从-50℃—150℃时对应的电阻分压值，单位mV*/
+};
+/*=============================================================================================================================*/
+/*==============================BMS系统通讯超时检测数据结构=======================================================*/
+typedef     struct 
+{
+unsigned    int         PrevTimes;        /*前一次的时间值，精度为10mS(0.01S)*/
+unsigned    short       LongOverTime;     /*一次长超时检测时间,精度10mS(0.01S)*/
+unsigned    short       RunStatus;        /*工作状态,0:正常;其它:故障*/
+unsigned    short       OvertimeValue;    /*允许的时间差，精度为10mS(0.01S)*/
+unsigned    short       OvertimeCount;    /*超时次数计数，0—65000*/
+}CommunitionOvertime;
+/*=====================================BMS变量记录数据结构======================================================*/
+typedef     struct
+{
+unsigned short    ParameterVerCode;       /*参数版本号*/
+unsigned short    ProgramVerCode;         /*BMS程序版本号*/
+unsigned int      StartTimes;             /*BMS开始运行的时间,单位S*/
+unsigned short    IrulationResition;      /*高低压绝缘电阻值*/
+unsigned short    VoltageValue;           /*母线电压值,精度0.1V*/
+unsigned int      CurrentValue;           /*母线电流值,精度0.1A,偏移量3000*/
+unsigned  int     BatteryPower;           /*当前电池包系统输出功率,精度1mW*/
+unsigned int      SystemTotalEnery;       /*目前电池包总能量,精度1WS*/      
+unsigned int      SystemEnery;            /*电池包剩余能量*/   
+unsigned short    BatterySoc;             /*BMS系统当前的SOC,精度0.1%*/
+unsigned  short   SystemTotalAH;          /*电池包总的AH数*/      
+unsigned  short   SystemAHValue;          /*目前电池包剩余AH数*/      
+unsigned short    HighInvVollate;         /*主正接触器后端电压,精度0.1V*/
+unsigned short    QuickChargeVoltage;     /*快充接触器后端电压,精度0,1V*/
+unsigned short    SlowChargeVlotage;      /*慢充接触器后端电压,精度0.1V*/
+unsigned short    PtcRelayVoltage;        /*PTC加热接触器后端电压,精度0.1V*/
+unsigned short    DCDCRelayVoltage;       /*DC/DC接触器后段电压,精度0.1V*/
+unsigned char     BmsStateValue;          /*BCU工作状态值*/
+unsigned char     BcuNumbers;             /*系统BCU总的数量*/
+unsigned char     BcuErrorCount;          /*BCU工作过程中的错误次数*/     
+unsigned char     BcuSerialCodeStatus;    /*所有BCU的编码状态*/
+unsigned short    CellTotalNumber;        /*所有电芯总的串联数量*/
+unsigned short    CellVoltageMax;         /*电芯电压最大值,精度0.1mV*/
+unsigned short    CellVoltageMin;         /*电芯电压最小值,精度0.1mV*/
+unsigned short    CellVoltageAve;         /*电芯电压平均值,精度0.1mV*/
+unsigned short    CellCountValue;         /*所有电芯电压累加和,精度0.1V*/
+unsigned short    SignalCountNumber;      /*温度传感器数量*/
+unsigned char     TempMaxValue;           /*电芯最高温度值*/
+unsigned char     TempMinValue;           /*电芯最低温度值*/
+unsigned char     TempaveValue;           /*电芯平均温度值*/
+unsigned char     BackupNOUSE;            /*备用占位*/
+unsigned int      BcuCommErrorCount;      /*BMU与BCU通讯质量值,通讯错误的次数累加值*/
+unsigned int      BatteryResitionValue;   /*电池包总的内阻,精度0.1mΩ*/
+unsigned short    UBValue;                /*系统输入电源,精度0.1V*/
+unsigned short    VMValue;                /*系统BUCK后电源,精度0.01V*/
+unsigned short    Vs1Value;               /*BMS系统输出5V电源,精度0.01V*/
+unsigned short    QuickCharge12V;         /*国标快充12V输出,精度0.1V*/
+unsigned short    QuickTest2Value;        /*国标快充插座检测点2电压,精度0.1V*/
+unsigned short    SlowCCResition;         /*慢充唤醒CC电阻，精度1Ω*/
+unsigned short    QuickPlugHighTemp;      /*快充插座高端温度值*/      
+unsigned short    QuickPlugLowTemp;       /*快充插座低端温度值*/      
+unsigned short    SlowPlugHighTemp;       /*快充插座高端温度值*/      
+unsigned short    SlowPlugLowTemp;        /*快充插座低端温度值*/ 
+unsigned short    SlowCPPwmValue;         /*慢充CP信号PWM站空比*/
+unsigned short    SlowCPPwmCycle;         /*慢充CP信号PWM周期*/
+unsigned short    BcuBreakMark[16];       /*BCU1-16断线标志*/
+//unsigned short    CellVoltage[16][12];    /*所有电芯的电压，精度0.1V*/
+//unsigned char     CellTemp[16][12];       /*所有电芯温度检测点*/
+}VarRecordStruct;
+
+
+
+
+
+
+
+/*==============================================================================全局变量声明区========================================================================*/
+extern      unsigned    int   SystemTimes;      /*系统上电后的运行时间,单位秒*/
+extern      unsigned    int   TotalTimes;       /*系统自从首次上电后总的运行时间,单位秒*/
+extern      struct      CanRepeatTran     CanRepeatBuff[];              /*CAN循环发送缓冲区定义*/
+extern      unsigned    int   HighIsulation,LowIsolation;               /*高端、低端，精度0.001MΩ*/
+extern      unsigned    int   InsulateResiter;                          /*综合绝缘电阻，精度0.01MΩ*/     
+extern      int         RailCurrentValue,RailCurrent;                   /*母线电流测量值，原始值、滤波值*/ 
+extern      unsigned    int         RailVolate,BatterysVolate;          /*系统母线电压，精度0.1V*/    
+extern      unsigned    int         HighBoxInvVolate,GbQuickVolate;     /*主正接触器后端电压，国标快充接触器后端电压，精度0.1V*/      
+extern      unsigned    int         ParameterState;                     /*参数下载/上传状态变量*/
+extern      unsigned    int   SysTickTime;                              /*系统检测节拍时间,精度10mS*/   
+extern      CommunitionOvertime     HrmuOverTime;                       /*HRMU超时检测*/
+extern      unsigned    int         SlowChargeVoltage;                  /*车载慢充接触器后端电压*/
+extern      unsigned    int         PtcAcRelayVoltage;                  /*PTC/AC控制接触器后端电压*/
+extern      unsigned    int         DcdcRealyVoltage;                   /*DC/DC接触器后端电压*/
+extern      VarRecordStruct         VarRecordMap;                       /*变量记录表*/  
+#if   HOST_COMMAND_RUN_IDLE_TASK==1                                     /*上位机命令函数在IDLE任务中执行*/
+extern      unsigned    int         HostCommandState;                   /*上位机发送命令状态*/      
+extern      unsigned    char        HostData[8];                        /*上位机发送的报文数据*/     
+#endif
+extern      unsigned char  BcuSpiCommBuff[132];                         /*BCU系统SPI通讯数据缓冲区*/  
+extern      unsigned int      BcuState;                                 /*BCU状态机切换状态值*/
+extern      struct BmsStatusStruct        BmsMessage;                   /*BCU自诊断信息数据*/
+extern      struct      BcuPackStruct BcuBatterys[];                    /*BCU电芯相关变量*/
+extern      unsigned short    CellVoltageMarkValue[][12];               /*电芯电压标记值,用于断线检测及电芯静止内泄漏测试*/
+extern      unsigned int      BatteryEneryVolate;                       /*电池包系统开路电压*/
+extern      unsigned int      PowerCurrentScaleValue;                   /*电池包电流与输出效率的比例值，0-1000*/
+extern      int   RealRailCurrent;                                      /*通过效率折算后的电流*/
+extern      unsigned int      ChargeEneryAdd,DisChargeEneryAdd;         /*充电/放电能量累加值*/
+extern      unsigned int      TotalDischargeEngry,TotalChargeEngry;     /*系统总的充电能量，总的放电能量*/
+extern      unsigned int      EneryValueAdd;                            /*系统能量累加值*/
+extern      unsigned int      AHValueAdd;                               /*AH计算累加值*/
+extern      struct  SystemStruct    SysControlMessage;                  /*系统控制相关数据结构*/
+extern      unsigned short    Atd0Pos,Atd1Pos;                          /*A/D转换模块0,1计数*/
+extern      unsigned short    MainStateStatus;                                /*主状态机工作状态*/
+extern      struct      OutputUploadStruct      OutputUploadData;             /*输出信号上传数据结构*/
+extern      struct      InputUploadStruct       InputUploadData;              /*输入信号上传数据结构*/
+
+
+
+
+
+
+
+
+
+
+/*=============================================以下区域用来保存系统配置参数=========================================*/
+extern      struct Paramerer_Struct_Made   	      *ParamMadeWork;		/*生产制造相关参数*/
+extern      struct Parameter_Struct_System	      *ParameterSystem;	      /*系统控制参数*/
+extern      struct Parameter_Struct_Charge	      *ParameterCharge;	      /*充电相关参数*/
+extern      struct Parameter_Struct_Temp	            *ParameterTemp;		/*与温度相关参数*/
+extern      struct Parameter_Struct_Voltage		*ParameterVoltage;	      /*电压相关参数*/
+extern      struct Parameter_Struct_Resition	      *ParameterCellResition;	/*电芯内阻表,精度0.1*/
+extern      struct Parameter_Strucy_UnlineVolage	*ParameterUnderVoltage;	/*电芯电压下限曲线*/
+extern      struct Parameter_Struct_Xiaolv		*ParameterOutXiaolv;	/*电池动态输出效率曲线*/
+extern      struct Parameter_Struct_Ocvsoc		*ParameterOcvSoc;	      /*BMS系统OCV-SOC修正相关参数*/
+extern      struct Parameter_Struct_Quick_Plug        *ParameterQuickPlug;     /*快充插座温度传感器分压表*/
+extern      struct Parameter_Struct_Slow_Plug         *ParameterSlowPlug;      /*慢充插座温度传感器分压表*/
+extern      struct Parameter_Struct_Bms_Intrenat      *ParameterBmsIntrenat;   /*BMS内部温度传感器分压表*/
+extern      struct Parameter_Struct_Bms_Backup        *ParameterBmsBackup;     /*BMS预留温度传感器分压表*/
+/*============================================以下区域定义的为EEPROM中的数据========================================*/
+#pragma arm section rwdata = "EEPROM_SECTION"
+extern      unsigned    int   EeTotalTimes;                                   /*EEPROM中系统自从首次上电后总的运行时间,单位秒*/
+extern      unsigned    int   ParameterStatus;                                /*参数在EEPROM中的状态，0X55AA6688:参数已经正常下载到EEPROM中；其他:参数未下载*/
+extern      unsigned    char  BcuMarkSerial[];                                /*所有BCU标志序列号*/
+extern      unsigned    int   EESystemSoc;                                    /*BMS系统的荷电状态（SOC）*/                                                                  
+extern      unsigned    int   EEChargeEneryAdd,EEDisChargeEneryAdd;           /*充电/放电能量累加值*/
+extern      unsigned    int   EETotalDischargeEngry,EETotalChargeEngry;       /*系统总的充电能量，总的放电能量*/
+extern      unsigned    int   EEEneryValueAdd;                                /*系统能量累加值*/
+extern      unsigned    int   EEBatteryEnery;                                 /*电池组当前的剩余能量*/
+extern      unsigned    int   EEBatteryAHValue;                               /*电池包系统剩余的AH数*/
+extern      unsigned    int   EEAHValueAdd;                                   /*AH计算累加值*/
+
+
+
+
+
+#pragma arm section 
+/*====================================================全局函数声明区============================================*/
+extern      void              InitVarent(void);                                     /*初始化所有全局变量*/
+extern      void              InitLoadParameter(void);                              /*初始化装载参数*/
+extern      unsigned int      ChangeDataOrder(unsigned int,unsigned int);           /*交换数据的字节顺序*/
+#if   HOST_COMMAND_RUN_IDLE_TASK==1                         /*上位机命令函数在IDLE任务中执行*/
+extern      void  ParameterTransProc(unsigned char *);                              /*参数传输系统*/
+extern      void  VarmeteruUploadProc(unsigned char *);                             /*变量记录上传系统系统*/
+#endif
+extern      short  GetTempToTable(unsigned short TempTable[],unsigned short);       /*通过温度传感器A/D转换值查表获得温度值*/
+
+
+
